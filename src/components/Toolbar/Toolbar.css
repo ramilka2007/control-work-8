@@ -1,25 +1,25 @@
 .nav-link {
-    height: 30px;
-    align-content: center;
+  height: 30px;
+  align-content: center;
 }
 
 .first-link {
-    width: 100px;
+  width: 100px;
 }
 
 .second-link {
-    width: 175px;
+  width: 175px;
 }
 
 .nav-link.active {
-    text-decoration: underline;
-    font-weight: bold;
-    font-size: 20px;
+  text-decoration: underline;
+  font-weight: bold;
+  font-size: 20px;
 }
 
 hr {
-    width: 3px;
-    background-color: white;
-    height: 30px;
-    margin: 0 15px;
+  width: 3px;
+  background-color: white;
+  height: 30px;
+  margin: 0 15px;
 }

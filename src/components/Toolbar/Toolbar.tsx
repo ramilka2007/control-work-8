@@ -13,7 +13,7 @@ const Toolbar = () => {
           <NavLink className="first-link nav-link text-white" to="/">
             Quotes
           </NavLink>
-          <hr/>
+          <hr />
           <NavLink className="second-link nav-link text-white" to="/new-quote">
             Submit new quote
           </NavLink>
