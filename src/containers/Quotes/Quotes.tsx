@@ -67,14 +67,17 @@ const Quotes: React.FC<Props> = ({ categories }) => {
     }
   };
 
-  const removeQuote = async (id: string) => {
-    await axiosApi.delete(`/quotes/${id}.json`);
-    navigate('/');
-    setQuotes((prevQuotes) => {
-      return prevQuotes.filter((quote) => quote.id !== id);
-    });
+  const deleteQuote = async (id: string, category: string) => {
+    setIsLoading(true);
+    try {
+      await axiosApi.delete(`/quotes/${id}.json`);
+      navigate(`/quotes/${category}`);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
   return (
     <>
       {isLoading ? (
@@ -103,13 +106,19 @@ const Quotes: React.FC<Props> = ({ categories }) => {
             </div>
             <div className="quotes col-7">
               <h1>{params.category ? <>{findCategory()}</> : <>All</>}</h1>
-              {quotes.map((quote: Quote) => (
-                <QuoteItem
-                  key={quote.id}
-                  quote={quote}
-                  deleteQuote={() => removeQuote(quote.id)}
-                />
-              ))}
+              {quotes.length > 0 ? (
+                <>
+                  {quotes.map((quote: Quote) => (
+                    <QuoteItem
+                      key={quote.id}
+                      quote={quote}
+                      deleteQuote={deleteQuote}
+                    />
+                  ))}
+                </>
+              ) : (
+                <h4>No quotes yet</h4>
+              )}
             </div>
           </div>
         </>

@@ -1,44 +1,70 @@
-import React, { useState } from 'react';
-import axiosApi from '../../axiosApi';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AddQuote, Categories } from '../../types';
+import axiosApi from '../../axiosApi';
+import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '../../components/Spinner/Spinner';
 
 interface Props {
   categories: Categories[];
 }
 
-const AddPost: React.FC<Props> = ({ categories }) => {
+const EditQuote: React.FC<Props> = ({ categories }) => {
   const navigate = useNavigate();
+  const params = useParams();
 
-  const [sendQuote, setSendQuote] = React.useState<AddQuote>({
+  const [editQuote, setEditQuote] = React.useState<AddQuote>({
     author: '',
     description: '',
-    category: 'star-wars',
+    category: '',
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const onFormSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const fetchEditPost = useCallback(async () => {
     setIsLoading(true);
 
-    const quote: AddQuote = {
-      author: sendQuote.author,
-      description: sendQuote.description,
-      category: sendQuote.category,
+    const response = await axiosApi.get(`/quotes/${params.category}.json`);
+    const quote = response.data;
+
+    try {
+      if (response.data !== null) {
+        setEditQuote({
+          ...quote,
+          author: quote.author,
+          description: quote.description,
+          category: quote.category,
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params.category]);
+
+  useEffect(() => {
+    void fetchEditPost();
+  }, [fetchEditPost]);
+
+  const onFormSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    setIsLoading(true);
+
+    const edited: AddQuote = {
+      author: editQuote.author,
+      description: editQuote.description,
+      category: editQuote.category,
     };
 
     try {
-      await axiosApi.post('/quotes.json', quote);
+      await axiosApi.put(`/quotes/${params.category}.json`, edited);
     } catch (error) {
       console.error('Error happened');
       throw error;
     } finally {
-      navigate('/quotes/' + quote.category);
+      navigate('/quotes/' + editQuote.category);
       setIsLoading(false);
     }
 
-    setSendQuote({
+    setEditQuote({
       author: '',
       description: '',
       category: '',
@@ -50,7 +76,7 @@ const AddPost: React.FC<Props> = ({ categories }) => {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
   ) => {
-    setSendQuote((prev) => ({
+    setEditQuote((prev) => ({
       ...prev,
       [event.target.name]: event.target.value,
     }));
@@ -63,7 +89,7 @@ const AddPost: React.FC<Props> = ({ categories }) => {
       ) : (
         <>
           <form onSubmit={onFormSubmit}>
-            <h2 className="text-center mb-4">Add new post</h2>
+            <h2 className="text-center mb-4">Edit post</h2>
             <div className="form-group mb-3 text-start w-75 mx-auto">
               <label htmlFor="category" className="form-label">
                 Category
@@ -74,7 +100,7 @@ const AddPost: React.FC<Props> = ({ categories }) => {
                 aria-label="Default select example"
                 name="category"
                 id="category"
-                value={sendQuote.category}
+                value={editQuote.category}
                 onChange={changeForm}
               >
                 {categories.map((category) => (
@@ -94,7 +120,7 @@ const AddPost: React.FC<Props> = ({ categories }) => {
                 name="author"
                 id="author"
                 className="form-control"
-                value={sendQuote.author}
+                value={editQuote.author}
                 onChange={changeForm}
               />
             </div>
@@ -107,13 +133,13 @@ const AddPost: React.FC<Props> = ({ categories }) => {
                 name="description"
                 id="description"
                 className="form-control"
-                value={sendQuote.description}
+                value={editQuote.description}
                 onChange={changeForm}
               ></textarea>
             </div>
             <div className="text-center">
               <button type="submit" className="btn btn-primary">
-                Send
+                Edit
               </button>
             </div>
           </form>
@@ -123,4 +149,4 @@ const AddPost: React.FC<Props> = ({ categories }) => {
   );
 };
 
-export default AddPost;
+export default EditQuote;

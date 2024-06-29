@@ -4,6 +4,7 @@ import { Link, Route, Routes } from 'react-router-dom';
 import AddQuote from './containers/AddQuote/AddQuote';
 import Quotes from './containers/Quotes/Quotes';
 import { Categories } from './types';
+import EditQuote from './containers/EditQuote/EditQuote';
 
 const App = () => {
   const categories: Categories[] = [
@@ -28,7 +29,11 @@ const App = () => {
         <Route
           path="/quotes/:category"
           element={<Quotes categories={categories} />}
-        ></Route>
+        />
+        <Route
+          path="/quotes/:category/edit"
+          element={<EditQuote categories={categories} />}
+        />
         <Route
           path="*"
           element={
